@@ -56,8 +56,13 @@ public class SQLServerDDLBuilder extends DDLBuilder {
                 int columnSize = columns.getInt("COLUMN_SIZE");
                 int decimalDigits = columns.getInt("DECIMAL_DIGITS");
                 boolean isNullable = columns.getString("IS_NULLABLE").equalsIgnoreCase("YES");
+                boolean isAutoIncrement = "YES".equalsIgnoreCase(columns.getString("IS_AUTOINCREMENT"));
 
-                ddl.append("  ").append(columnName).append(" ").append(dataType);
+                if (isAutoIncrement) {
+                    ddl.append("  ").append(columnName).append(" int IDENTITY(1,1)");
+                } else {
+                    ddl.append("  ").append(columnName).append(" ").append(dataType);
+                }
                 if (dataType.equalsIgnoreCase("VARCHAR") || dataType.equalsIgnoreCase("CHAR") || dataType.equalsIgnoreCase("NVARCHAR") || dataType.equalsIgnoreCase("NCHAR")) {
                     ddl.append("(").append(columnSize).append(")");
                 } else if (dataType.equalsIgnoreCase("DECIMAL") || dataType.equalsIgnoreCase("NUMERIC")) {
